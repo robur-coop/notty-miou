@@ -1,0 +1,21 @@
+opam-version: "2.0"
+homepage:     "https://github.com/robur-coop/notty-miou"
+dev-repo:     "git+https://github.com/robur-coop/notty-miou.git"
+bug-reports:  "https://github.com/robur-coop/notty-miou/issues"
+doc:          "https://robur-coop.github.io/notty-miou/doc"
+author:       "Romain Calascibetta <romain.calascibetta@gmail.com>"
+maintainer:   "Romain Calascibetta <romain.calascibetta@gmail.com>"
+license:      "ISC"
+synopsis:     "Declaring terminals with Miou"
+
+build: [ [ "dune" "subst" ] {dev}
+         [ "dune" "build" "-p" name "-j" jobs ] ]
+depends: [
+  "ocaml" {>= "4.08.0"}
+  "dune" {>= "1.7"}
+  "notty" {>= "0.2.3"}
+  "miou"
+]
+pin-depends: [
+  "miou.dev" "git+https://github.com/robur-coop/miou.git#c6304756eaa63aeabb3cfdd2387f77c300856fca"
+]

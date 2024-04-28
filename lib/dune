@@ -1,0 +1,10 @@
+(library
+ (public_name notty-miou)
+ (name notty_miou)
+ (wrapped false)
+ (foreign_stubs
+  (language c)
+  (names winsize)
+  (flags
+   (:standard -Wall -Wextra -O3)))
+ (libraries notty miou miou.unix))

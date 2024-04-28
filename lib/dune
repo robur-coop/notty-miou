@@ -1,6 +1,7 @@
 (library
  (public_name notty-miou)
  (name notty_miou)
+ (modules notty_miou)
  (wrapped false)
  (foreign_stubs
   (language c)
@@ -8,3 +9,9 @@
   (flags
    (:standard -Wall -Wextra -O3)))
  (libraries notty miou miou.unix))
+
+(library
+ (public_name nottui-miou)
+ (name nottui_miou)
+ (modules nottui_miou)
+ (libraries nottui notty-miou))

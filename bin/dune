@@ -1,3 +1,9 @@
 (executable
  (name life)
+ (modules life)
  (libraries notty-miou))
+
+(executable
+ (name pretty)
+ (modules pretty)
+ (libraries nottui-pretty nottui-miou))

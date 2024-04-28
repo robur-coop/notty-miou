@@ -1,9 +1,20 @@
 open Notty
 
+module Stop : sig
+  type t
+
+  val create : unit -> t
+  val stop : t -> unit
+  val wait : t -> unit
+  val stopped : t -> bool
+end
+
 module Stream : sig
   type 'a t
 
+  val create : unit -> 'a t
   val get : 'a t -> 'a
+  val put : 'a t -> 'a -> unit
 end
 
 (** {1:fullscreen Fullscreen input and output}. *)
@@ -55,6 +66,7 @@ module Term : sig
 
   val size : t -> int * int
   val fds : t -> Miou_unix.file_descr * Miou_unix.file_descr
+  val stop : t -> Stop.t
 
   (** {1 Window size change notifications}
 

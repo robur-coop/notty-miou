@@ -158,10 +158,10 @@ module Term = struct
       | `End -> fn ()
       | `Await -> (
           let read =
-            Miou.call_cc @@ fun () ->
-            `Read (Miou_unix.read input buf 0 (Bytes.length buf))
+            Miou.async @@ fun () ->
+            `Read (Miou_unix.read input buf)
           and interrupt =
-            Miou.call_cc @@ fun () ->
+            Miou.async @@ fun () ->
             Stop.wait stop;
             `Stop
           in
@@ -175,7 +175,7 @@ module Term = struct
               Stop.stop stop;
               reraise exn)
     in
-    ignore (Miou.call_cc ~orphans fill)
+    ignore (Miou.async ~orphans fill)
 
   type t = {
     oc : Miou_unix.file_descr;
@@ -191,7 +191,7 @@ module Term = struct
     Tmachine.output t.trm t.buf;
     let str = Buffer.contents t.buf in
     Buffer.clear t.buf;
-    Miou_unix.write t.oc str 0 (String.length str)
+    Miou_unix.write t.oc str
 
   let refresh t =
     Tmachine.refresh t.trm;
@@ -230,15 +230,15 @@ module Term = struct
   let fill_from_output ~orphans ~on_resize:fn output stop stream =
     let rec fill () =
       let wait =
-        Miou.call_cc @@ fun () ->
+        Miou.async @@ fun () ->
         Miou_unix.sleep 0.1;
         `Continue
       and interrupt =
-        Miou.call_cc @@ fun () ->
+        Miou.async @@ fun () ->
         Stop.wait stop;
         `Stop
       and resize =
-        Miou.call_cc @@ fun () ->
+        Miou.async @@ fun () ->
         winch ();
         `Resize (winsize output)
       in
@@ -253,7 +253,7 @@ module Term = struct
           Stop.stop stop;
           reraise exn
     in
-    ignore (Miou.call_cc ~orphans fill)
+    ignore (Miou.async ~orphans fill)
 
   let create ?(nosig = true) ?(mouse = true) ?(bpaste = true)
       ?(input = Miou_unix.of_file_descr Unix.stdin)
@@ -300,5 +300,5 @@ include Private.Gen_output (struct
 
   let write fd buf =
     let str = Buffer.contents buf in
-    Miou_unix.write fd str 0 (String.length str)
+    Miou_unix.write fd str
 end)

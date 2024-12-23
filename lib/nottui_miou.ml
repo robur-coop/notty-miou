@@ -36,8 +36,8 @@ let render ~size ~stop ~events v =
     in
     do_event ()
   in
-  let prm0 = Miou.call_cc do_refresh in
-  let prm1 = Miou.call_cc do_event in
+  let prm0 = Miou.async do_refresh in
+  let prm1 = Miou.async do_event in
   Stream.put refresh ();
   (image, prm0, prm1)
 
@@ -55,7 +55,7 @@ let run v =
     Term.image term image;
     do_print ()
   in
-  let prm2 = Miou.call_cc do_print in
-  let prm3 = Miou.call_cc @@ fun () -> Stop.wait stop in
+  let prm2 = Miou.async do_print in
+  let prm3 = Miou.async @@ fun () -> Stop.wait stop in
   or_raise $ Miou.await_first [ prm0; prm1; prm2; prm3 ];
   Term.release term

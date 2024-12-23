@@ -16,6 +16,3 @@ depends: [
   "notty" {>= "0.2.3"}
   "miou"
 ]
-pin-depends: [
-  "miou.dev" "git+https://github.com/robur-coop/miou.git#c6304756eaa63aeabb3cfdd2387f77c300856fca"
-]

@@ -116,24 +116,24 @@ let rec loop (e, t) term ((dim, n, life) as st) =
       Term.release term
   | Ok `Timer ->
       Term.image term (render dim n life) ;
-      let t = Miou.call_cc timer in
+      let t = Miou.async timer in
       loop (e, t) term (dim, n + 1, step (torus dim) life)
   | Ok (`Mouse ((`Press `Left | `Drag), (x, y), _)) ->
-      let e = Miou.call_cc (open_event % event term) in
+      let e = Miou.async (open_event % event term) in
       loop (e, t) term (dim, n, CSet.add (torus dim (x, y)) life)
   | Ok (`Resize dim) ->
       let life = CSet.map (torus dim) life in
       Term.image term (render dim n life) ;
-      let e = Miou.call_cc (open_event % event term) in
+      let e = Miou.async (open_event % event term) in
       loop (e, t) term (dim, n, life)
   | Ok _ ->
-      let e = Miou.call_cc (open_event % event term) in
+      let e = Miou.async (open_event % event term) in
       loop (e, t) term st
 
 let main () =
   let term = Term.create () in
-  let e = Miou.call_cc (open_event % event term) in
-  let t = Miou.call_cc timer in
+  let e = Miou.async (open_event % event term) in
+  let t = Miou.async timer in
   loop (e, t) term (Term.size term, 0, glider)
 
 let () = Miou_unix.run main

@@ -10,6 +10,5 @@ $ opam pin add -y .
 $ dune exec bin/life.exe
 ```
 
-
 [notty]: https://github.com/pqwy/notty
 [miou]: https://github.com/robur-coop/miou

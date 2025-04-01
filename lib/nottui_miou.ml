@@ -38,8 +38,7 @@ let render ~size ~stop ~events v =
   in
   let prm0 = Miou.async do_refresh in
   let prm1 = Miou.async do_event in
-  Stream.put refresh ();
-  (image, prm0, prm1)
+  Stream.put refresh (); (image, prm0, prm1)
 
 let or_raise = function Ok v -> v | Error exn -> raise exn
 let ( $ ) f x = f x
@@ -52,8 +51,7 @@ let run v =
   in
   let rec do_print () =
     let image = Stream.get stream in
-    Term.image term image;
-    do_print ()
+    Term.image term image; do_print ()
   in
   let prm2 = Miou.async do_print in
   let prm3 = Miou.async @@ fun () -> Stop.wait stop in

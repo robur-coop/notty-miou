@@ -28,13 +28,13 @@ module Term : sig
   (** {1 Construction and destruction} *)
 
   val create :
-    ?nosig:bool ->
-    ?mouse:bool ->
-    ?bpaste:bool ->
-    ?input:Miou_unix.file_descr ->
-    ?output:Miou_unix.file_descr ->
-    unit ->
-    t
+       ?nosig:bool
+    -> ?mouse:bool
+    -> ?bpaste:bool
+    -> ?input:Miou_unix.file_descr
+    -> ?output:Miou_unix.file_descr
+    -> unit
+    -> t
   (** [create ~nosig ~mouse ~input ~output ()] creates a new {{!t} terminal}.
 
       See {!Notty_unix.Term.create}. *)
@@ -78,7 +78,8 @@ module Term : sig
 
   val winch : unit -> unit
   (** [winch ()] is a thread completing after the next [SIGWINCH]. A single
-      signal delivery will cause the completion of all waiting [winch] threads. *)
+      signal delivery will cause the completion of all waiting [winch] threads.
+  *)
 end
 
 (** {1:inline Inline output} *)
@@ -93,7 +94,7 @@ val output_image_size :
 val show_cursor : ?cap:Cap.t -> ?fd:Miou_unix.file_descr -> bool -> unit
 
 val move_cursor :
-  ?cap:Cap.t ->
-  ?fd:Miou_unix.file_descr ->
-  [ `Home | `By of int * int | `To of int * int ] ->
-  unit
+     ?cap:Cap.t
+  -> ?fd:Miou_unix.file_descr
+  -> [ `Home | `By of int * int | `To of int * int ]
+  -> unit

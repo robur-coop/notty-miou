@@ -25,9 +25,9 @@ module Private = struct
     let open Unix in
     try
       let tc = Unix.tcgetattr fd in
-      let tc1 = { tc with Unix.c_icanon = false; c_echo = false } in
+      let tc1 = { tc with Unix.c_icanon= false; c_echo= false } in
       let tc2 =
-        if nosig then { tc1 with Unix.c_isig = false; c_ixon = false } else tc1
+        if nosig then { tc1 with Unix.c_isig= false; c_ixon= false } else tc1
       in
       Unix.tcsetattr fd Unix.TCSANOW tc2;
       `Revert (once @@ fun _ -> Unix.tcsetattr fd Unix.TCSANOW tc)
@@ -55,9 +55,7 @@ module Private = struct
     let output ?cap ?(fd = O.def) fn =
       let cap = Option.value ~default:(cap_for_fd (O.to_fd fd)) cap in
       let buf = scratch in
-      Buffer.reset buf;
-      fn buf cap fd;
-      O.write fd buf
+      Buffer.reset buf; fn buf cap fd; O.write fd buf
 
     let output_image_size ?cap ?fd f =
       output ?cap ?fd @@ fun buf cap fd ->
@@ -83,9 +81,9 @@ end
 
 module Stream = struct
   type 'a t = {
-    mutex : Miou.Mutex.t;
-    condition : Miou.Condition.t;
-    queue : 'a Queue.t;
+      mutex: Miou.Mutex.t
+    ; condition: Miou.Condition.t
+    ; queue: 'a Queue.t
   }
 
   let create () =
@@ -109,14 +107,14 @@ end
 
 module Stop = struct
   type t = {
-    mutex : Miou.Mutex.t;
-    condition : Miou.Condition.t;
-    mutable stop : bool;
+      mutex: Miou.Mutex.t
+    ; condition: Miou.Condition.t
+    ; mutable stop: bool
   }
 
   let create () =
     let mutex = Miou.Mutex.create () and condition = Miou.Condition.create () in
-    { mutex; condition; stop = false }
+    { mutex; condition; stop= false }
 
   let stop t =
     Miou.Mutex.protect t.mutex @@ fun () ->
@@ -152,67 +150,42 @@ module Term = struct
     let flt = Unescape.create () and buf = Bytes.create 1024 in
     let rec fill () =
       match Unescape.next flt with
-      | #Unescape.event as r ->
-          Stream.put stream r;
-          fill ()
+      | #Unescape.event as r -> Stream.put stream r; fill ()
       | `End -> fn ()
       | `Await -> (
-          let read =
-            Miou.async @@ fun () ->
-            `Read (Miou_unix.read input buf)
-          and interrupt =
-            Miou.async @@ fun () ->
-            Stop.wait stop;
-            `Stop
-          in
+          let read = Miou.async @@ fun () -> `Read (Miou_unix.read input buf)
+          and interrupt = Miou.async @@ fun () -> Stop.wait stop; `Stop in
           match Miou.await_first [ read; interrupt ] with
-          | Ok (`Read n) ->
-              Unescape.input flt buf 0 n;
-              fill ()
+          | Ok (`Read n) -> Unescape.input flt buf 0 n; fill ()
           | Ok `Stop -> fn ()
-          | Error exn ->
-              fn ();
-              Stop.stop stop;
-              reraise exn)
+          | Error exn -> fn (); Stop.stop stop; reraise exn)
     in
     ignore (Miou.async ~orphans fill)
 
   type t = {
-    oc : Miou_unix.file_descr;
-    trm : Tmachine.t;
-    buf : Buffer.t;
-    fds : Miou_unix.file_descr * Miou_unix.file_descr;
-    events : [ Unescape.event | `Resize of int * int ] Stream.t;
-    orphans : unit Miou.orphans;
-    stop : Stop.t;
+      oc: Miou_unix.file_descr
+    ; trm: Tmachine.t
+    ; buf: Buffer.t
+    ; fds: Miou_unix.file_descr * Miou_unix.file_descr
+    ; events: [ Unescape.event | `Resize of int * int ] Stream.t
+    ; orphans: unit Miou.orphans
+    ; stop: Stop.t
   }
 
   let write t =
     Tmachine.output t.trm t.buf;
     let str = Buffer.contents t.buf in
-    Buffer.clear t.buf;
-    Miou_unix.write t.oc str
+    Buffer.clear t.buf; Miou_unix.write t.oc str
 
-  let refresh t =
-    Tmachine.refresh t.trm;
-    write t
-
-  let image t image =
-    Tmachine.image t.trm image;
-    write t
-
-  let cursor t v =
-    Tmachine.cursor t.trm v;
-    write t
-
+  let refresh t = Tmachine.refresh t.trm; write t
+  let image t image = Tmachine.image t.trm image; write t
+  let cursor t v = Tmachine.cursor t.trm v; write t
   let set_size t dim = Tmachine.set_size t.trm dim
   let size t = Tmachine.size t.trm
 
   let rec terminate orphans =
     match Miou.care orphans with
-    | Some None ->
-        Miou.yield ();
-        terminate orphans
+    | Some None -> Miou.yield (); terminate orphans
     | None -> ()
     | Some (Some prm) -> (
         match Miou.await prm with
@@ -222,21 +195,13 @@ module Term = struct
             terminate orphans)
 
   let release t =
-    if Tmachine.release t.trm then (
-      Stop.stop t.stop;
-      write t);
+    if Tmachine.release t.trm then (Stop.stop t.stop; write t);
     terminate t.orphans
 
   let fill_from_output ~orphans ~on_resize:fn output stop stream =
     let rec fill () =
-      let wait =
-        Miou.async @@ fun () ->
-        Miou_unix.sleep 0.1;
-        `Continue
-      and interrupt =
-        Miou.async @@ fun () ->
-        Stop.wait stop;
-        `Stop
+      let wait = Miou.async @@ fun () -> Miou_unix.sleep 0.1; `Continue
+      and interrupt = Miou.async @@ fun () -> Stop.wait stop; `Stop
       and resize =
         Miou.async @@ fun () ->
         winch ();
@@ -249,9 +214,7 @@ module Term = struct
           fill ()
       | Ok (`Resize None) | Ok `Continue -> fill ()
       | Ok `Stop -> ()
-      | Error exn ->
-          Stop.stop stop;
-          reraise exn
+      | Error exn -> Stop.stop stop; reraise exn
     in
     ignore (Miou.async ~orphans fill)
 
@@ -262,23 +225,20 @@ module Term = struct
     let fd = Miou_unix.to_file_descr output in
     let trm = Tmachine.create ~mouse ~bpaste (Private.cap_for_fd fd) in
     let buf = Buffer.create 4096 in
-    let on_resize dim =
-      Buffer.reset buf;
-      Tmachine.set_size trm dim
-    in
+    let on_resize dim = Buffer.reset buf; Tmachine.set_size trm dim in
     let orphans = Miou.orphans () in
     let stream = Stream.create () in
     fill_from_input ~orphans ~nosig stop input stream;
     fill_from_output ~orphans ~on_resize fd stop stream;
     let t =
       {
-        trm;
-        oc = output;
-        buf = Buffer.create 4096;
-        fds = (input, output);
-        stop;
-        events = stream;
-        orphans;
+        trm
+      ; oc= output
+      ; buf= Buffer.create 4096
+      ; fds= (input, output)
+      ; stop
+      ; events= stream
+      ; orphans
       }
     in
     Option.iter (set_size t) (winsize fd);

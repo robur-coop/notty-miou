@@ -44,19 +44,15 @@ let moebius (w, h) ((a, b) as ab) =
 
 let neigh topo (a, b) =
   [
-    (a - 1, b);
-    (a + 1, b);
-    (a - 1, b - 1);
-    (a - 1, b + 1);
-    (a, b - 1);
-    (a, b + 1);
-    (a + 1, b - 1);
-    (a + 1, b + 1);
+    (a - 1, b); (a + 1, b); (a - 1, b - 1); (a - 1, b + 1); (a, b - 1)
+  ; (a, b + 1); (a + 1, b - 1); (a + 1, b + 1)
   ]
   |> List.map topo
 
 let step topo life =
-  let nlive pt = List.(neigh topo pt |> filter (flip CSet.mem life) |> length) in
+  let nlive pt =
+    List.(neigh topo pt |> filter (flip CSet.mem life) |> length)
+  in
   let f1 pt acc =
     pt :: neigh topo pt
     |> List.fold_left
@@ -68,7 +64,8 @@ let step topo life =
                acc
                |> CMap.add pt
                     (if n = 3 || (n = 2 && CSet.mem pt life) then 0 else 1))
-         acc in
+         acc
+  in
   CSet.fold f1 life CMap.empty |> CMap.preimg (( = ) 0)
 
 let glider = CSet.of_list [ (2, 1); (3, 2); (1, 3); (2, 3); (3, 3) ]
@@ -97,11 +94,7 @@ let render (w, h) step life =
 open Notty_miou
 
 let ( % ) f g x = f (g x)
-
-let timer () =
-  Miou_unix.sleep 0.1 ;
-  `Timer
-
+let timer () = Miou_unix.sleep 0.1; `Timer
 let event term () = Stream.get (Term.events term)
 
 let open_event = function
@@ -112,10 +105,9 @@ let rec loop (e, t) term ((dim, n, life) as st) =
   match Miou.await_one [ e; t ] with
   | Error _exn -> ()
   | Ok (`Key (`Escape, []) | `Key (`ASCII 'C', [ `Ctrl ])) ->
-      Miou.cancel t ;
-      Term.release term
+      Miou.cancel t; Term.release term
   | Ok `Timer ->
-      Term.image term (render dim n life) ;
+      Term.image term (render dim n life);
       let t = Miou.async timer in
       loop (e, t) term (dim, n + 1, step (torus dim) life)
   | Ok (`Mouse ((`Press `Left | `Drag), (x, y), _)) ->
@@ -123,7 +115,7 @@ let rec loop (e, t) term ((dim, n, life) as st) =
       loop (e, t) term (dim, n, CSet.add (torus dim (x, y)) life)
   | Ok (`Resize dim) ->
       let life = CSet.map (torus dim) life in
-      Term.image term (render dim n life) ;
+      Term.image term (render dim n life);
       let e = Miou.async (open_event % event term) in
       loop (e, t) term (dim, n, life)
   | Ok _ ->

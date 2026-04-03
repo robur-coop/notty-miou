@@ -13,6 +13,6 @@ build: [ [ "dune" "subst" ] {dev}
 depends: [
   "ocaml" {>= "4.08.0"}
   "dune" {>= "1.7"}
-  "notty" {>= "0.2.3"}
+  "notty-community" {>= "0.2.3"}
   "miou"
 ]

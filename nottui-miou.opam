@@ -10,7 +10,7 @@ depends: [
   "dune" {>= "3.5"}
   "miou"
   "nottui"
-  "notty" {>= "0.2"}
+  "notty-community" {>= "0.2"}
   "odoc" {with-doc}
 ]
 build: [

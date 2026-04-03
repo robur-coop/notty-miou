@@ -8,7 +8,7 @@
   (names winsize)
   (flags
    (:standard -Wall -Wextra -O3)))
- (libraries notty miou miou.unix))
+ (libraries notty-community miou miou.unix))
 
 (library
  (public_name nottui-miou)

@@ -11,6 +11,7 @@ depends: [
   "miou"
   "nottui"
   "notty-community" {>= "0.2"}
+  "notty-miou" {= version}
   "odoc" {with-doc}
 ]
 build: [

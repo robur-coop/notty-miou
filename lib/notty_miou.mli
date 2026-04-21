@@ -17,7 +17,7 @@ module Stream : sig
   val put : 'a t -> 'a -> unit
 end
 
-(** {1:fullscreen Fullscreen input and output}. *)
+(** {1:fullscreen Fullscreen input and output.} *)
 
 (** Terminal IO with concurrency.
 

@@ -11,7 +11,7 @@ synopsis:     "Declaring terminals with Miou"
 build: [ [ "dune" "subst" ] {dev}
          [ "dune" "build" "-p" name "-j" jobs ] ]
 depends: [
-  "ocaml" {>= "4.08.0"}
+  "ocaml" {>= "5.1.0"}
   "dune" {>= "1.7"}
   "notty-community" {>= "0.2.3"}
   "miou"

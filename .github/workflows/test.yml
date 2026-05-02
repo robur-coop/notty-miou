@@ -20,6 +20,6 @@ jobs:
       - name: Install dependencies
         run: opam install --deps-only -t notty-miou nottui-miou
       - name: Build
-        run: opam exec -- dune build -p notty-miou nottui-miou
+        run: opam exec -- dune build -p notty-miou,nottui-miou
       - name: Test
-        run: opam exec -- dune runtest -p notty-miou nottui-miou
+        run: opam exec -- dune runtest -p notty-miou,nottui-miou

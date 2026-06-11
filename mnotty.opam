@@ -14,5 +14,6 @@ depends: [
   "ocaml" {>= "5.1.0"}
   "dune" {>= "1.7"}
   "notty-community" {>= "0.2.3"}
+  "flux"
   "mkernel"
 ]

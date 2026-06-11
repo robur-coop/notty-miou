@@ -11,6 +11,20 @@
  (libraries notty-community miou miou.unix))
 
 (library
+ (public_name mnotty)
+ (name mnotty)
+ (modules mnotty)
+ (wrapped false)
+ (libraries flux notty-community mkernel))
+
+(library
+ (public_name mnottui)
+ (name mnottui)
+ (modules mnottui)
+ (wrapped false)
+ (libraries nottui mnotty))
+
+(library
  (public_name nottui-miou)
  (name nottui_miou)
  (modules nottui_miou)

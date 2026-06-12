@@ -16,4 +16,5 @@ depends: [
   "notty-community" {>= "0.2.3"}
   "mkernel"
   "mnotty"
+  "nottui" {>= "0.5"}
 ]
